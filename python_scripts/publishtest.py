@@ -13,11 +13,11 @@ async def run():
 
     # Initialize the first NATS client
     nc1 = NATS()
-    await nc1.connect("nats://3.78.247.64:4222")  # Connect to the first NATS server
+    await nc1.connect("nats://3.127.248.255:4222")  # Connect to the first NATS server
 
     # Initialize the second NATS client
     nc2 = NATS()
-    await nc2.connect("nats://18.197.138.216:4222")  # Connect to the second NATS server
+    await nc2.connect("nats://3.74.166.63:4222")  # Connect to the second NATS server
 
     # Define callback function that triggers when a message is received
     async def cb(msg):
@@ -26,14 +26,14 @@ async def run():
         print(f"Unique ID of message: {unique_id}")  # Print the unique ID
         message_received.set_result(True)  # Signal that message was received
 
-    await nc1.subscribe("foo", cb=cb)  # Subscribe to 'foo' topic on the first server and set the callback function
+    await nc1.subscribe("channel1", cb=cb)  # Subscribe to 'foo' topic on the first server and set the callback function
 
     # Create a unique identifier for the message to be published
     unique_id = f"{datetime.utcnow().isoformat()}_{random.randint(1, 1000)}"
 
     # Publish a message with the unique ID on the second NATS server
     msg = f"Hello, NATS! {unique_id}"
-    await nc2.publish("foo", msg.encode())
+    await nc2.publish("channel1", msg.encode())
     print(f"Publish completed on the second server. Unique ID: {unique_id}")  # Print confirmation of the published message
     publish_done.set_result(True)  # Signal that publishing is complete
 
