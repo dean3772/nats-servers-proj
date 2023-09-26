@@ -1,0 +1,3 @@
+#/home/dean/dean/projects1/withoutbonus/python_scripts/requirements.txt
+nats.py
+asyncio

@@ -1,0 +1,12 @@
+#/home/dean/dean/projects1/withoutbonus/ansible/roles/nats/tasks/nats-server.service
+[Unit]
+Description=NATS Server
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/nats-server -c /etc/nats/nats.conf
+User=nats
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

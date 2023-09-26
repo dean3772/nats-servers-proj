@@ -1,0 +1,12 @@
+# /home/dean/dean/projects1/withoutbonus/ansible/roles/nats/handlers/main.yml---
+- name: Reload systemd
+  become: true
+  systemd:
+    daemon_reload: yes
+
+- name: Restart NATS
+  become: true
+  systemd:
+    name: nats-server
+    state: restarted
+

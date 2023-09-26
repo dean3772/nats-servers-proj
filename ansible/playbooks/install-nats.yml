@@ -1,0 +1,7 @@
+#/home/dean/dean/projects1/withoutbonus/ansible/playbooks/install-nats.yml
+---
+- name: Install and Configure NATS
+  hosts: nats_cluster
+  gather_facts: true
+  roles:
+    - nats

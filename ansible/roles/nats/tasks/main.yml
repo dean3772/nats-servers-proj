@@ -1,0 +1,150 @@
+#/home/dean/dean/projects1/withoutbonus/ansible/roles/nats/tasks/main.yml
+- name: Remove apt lock files
+  become: true
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "/var/lib/apt/lists/lock"
+    - "/var/cache/apt/archives/lock"
+    - "/var/lib/dpkg/lock"
+
+- name: Update apt cache
+  become: true
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  register: apt_result
+  until: apt_result is succeeded
+  retries: 5
+  delay: 10
+
+- name: Debug failed apt operation
+  become: true
+  command: apt-get update -o Debug::Acquire::http=true
+  when: apt_result is failed
+
+- name: Install required packages
+  become: true
+  apt:
+    name: "{{ item }}"
+  loop:
+    - wget
+    - gnupg
+    - gnupg2
+
+- name: Check if NATS is already installed
+  become: true
+  shell: "dpkg -l | grep nats-server"
+  register: check_nats
+  ignore_errors: true
+
+- name: Download the NATS .deb package
+  get_url:
+    url: "https://github.com/nats-io/nats-server/releases/download/v2.10.1/nats-server-v2.10.1-amd64.deb"
+    dest: "/tmp/nats-server.deb"
+  when: check_nats.rc != 0
+
+- name: Install the NATS .deb package
+  become: true
+  ansible.builtin.command:
+    cmd: dpkg -i /tmp/nats-server.deb
+  when: check_nats.rc != 0
+
+- name: Ensure NATS user exists
+  become: true
+  user:
+    name: nats
+    system: yes
+    create_home: no
+
+- name: Ensure /etc/nats directory exists
+  become: true
+  ansible.builtin.file:
+    path: /etc/nats
+    state: directory
+    mode: '0755'
+    owner: nats
+
+- name: Debug Jinja2 variables
+  debug:
+    msg: "ansible_facts default_ipv4 address: {{ ansible_facts['default_ipv4']['address'] }}, NATS Cluster: {{ groups['nats_cluster'] }}"
+
+- name: Debug IP and Groups
+  debug:
+    msg: "Host IP: {{ ansible_facts['default_ipv4']['address'] }}, NATS Cluster: {{ groups['nats_cluster'] }}"
+
+- name: Get the machine's own IP address
+  setup:
+    filter: ansible_default_ipv4
+  register: ip_data
+
+- name: Debug IP and Host
+  debug:
+    msg: "Host IP: {{ ansible_facts['default_ipv4']['address'] }}"
+
+
+
+- name: Configure NATS for clustering
+  become: true
+  template:
+    src: nats.conf.j2  # Make sure this is your updated template
+    dest: /etc/nats/nats.conf
+    owner: nats
+    mode: '0644'
+  notify: 
+    - Reload systemd
+    - Restart NATS
+
+- name: Ensure correct permissions for NATS binary
+  become: true
+  file:
+    path: /usr/bin/nats-server
+    owner: nats
+    mode: '0755'
+
+- name: Deploy NATS Systemd service file
+  become: true
+  copy:
+    src: nats-server.service
+    dest: /etc/systemd/system/nats-server.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: 
+    - Reload systemd
+    - Restart NATS
+
+- name: Reload Systemd
+  become: true
+  command: systemctl daemon-reload
+
+- name: Check NATS service status
+  become: true
+  command: systemctl status nats-server
+  register: nats_status
+  changed_when: false
+  failed_when: false
+
+- name: Debug NATS service status
+  debug:
+    msg: "NATS service status: {{ nats_status.stdout }}"
+  when: nats_status.rc != 0
+
+- name: Autoclean for Debian/Ubuntu
+  become: true
+  apt:
+    autoremove: yes
+    autoclean: yes
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Create NATS log directory
+  become: true
+  file:
+    path: "/var/log/nats"
+    state: directory
+    owner: nats
+
+- name: Change ownership of NATS log directory
+  become: true
+  command: chown nats:nats /var/log/nats
