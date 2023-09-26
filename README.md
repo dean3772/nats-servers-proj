@@ -3,7 +3,7 @@
 ## Overview
  - This project automates the deployment of a 3-node NATS cluster using Ansible and Terraform. The Ansible playbook installs and configures NATS, while the Terraform script sets up the AWS infrastructure.
 
- - the python script aims to test the funcionality of the 3-node nats cluster
+ - the python script aims to test the funcionality of the nats cluster by trying to subscribe to a subject on one node and publish to the same subject on another node 
 
 ## Requirements
 - AWS Account
@@ -22,9 +22,8 @@
 ## File Structure
 Here's a basic outline of the file structure:
 
-```lua
+```
 .
-├── README copy.md
 ├── README.md
 ├── ansible
 │   ├── ansible.cfg
@@ -40,7 +39,6 @@ Here's a basic outline of the file structure:
 │               ├── nats-server.service
 │               └── templates
 │                   └── nats.conf.j2
-├── folderstrucure.txt
 ├── init.sh
 ├── python_scripts
 │   ├── publishtest.py

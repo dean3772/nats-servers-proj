@@ -1,6 +1,6 @@
 ---
 - name: Setup NATS
-  become: true  # Makes the whole block run with elevated privileges
+  become: true  
   block:
     - name: Remove apt lock files
       file:

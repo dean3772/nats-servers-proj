@@ -1,4 +1,3 @@
-# /home/dean/dean/projects1/withoutbonus/ansible/roles/nats/handlers/main.yml---
 - name: Reload systemd
   become: true
   systemd:

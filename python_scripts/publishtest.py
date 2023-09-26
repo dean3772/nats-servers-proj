@@ -1,4 +1,3 @@
-#/home/dean/dean/projects1/withoutbonus/python_scripts/publishtest.py
 # Import necessary libraries
 import asyncio
 from nats.aio.client import Client as NATS

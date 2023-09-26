@@ -1,4 +1,3 @@
-#/home/dean/dean/projects1/withoutbonus/init.sh
 #!/bin/bash
 export ANSIBLE_HOST_KEY_CHECKING=False
 

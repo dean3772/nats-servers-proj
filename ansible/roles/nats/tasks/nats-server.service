@@ -1,4 +1,3 @@
-#/home/dean/dean/projects1/withoutbonus/ansible/roles/nats/tasks/nats-server.service
 [Unit]
 Description=NATS Server
 After=network.target

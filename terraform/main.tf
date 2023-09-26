@@ -1,4 +1,3 @@
-#/home/dean/dean/projects1/withoutbonus/terraform/main.tf
 provider "aws" {
   region = "eu-central-1"
 }
