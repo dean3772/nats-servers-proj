@@ -44,21 +44,21 @@ resource "aws_security_group" "nats_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  // you might want to restrict this to your IP
+    cidr_blocks = ["0.0.0.0/0"]  
   }
 
   ingress {
     from_port   = 6222
     to_port     = 6222
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  // Open to the world, again, be cautious
+    cidr_blocks = ["0.0.0.0/0"]  
   }
 
  ingress {
     from_port   = 8222
     to_port     = 8222
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  // Open to the world, again, be cautious
+    cidr_blocks = ["0.0.0.0/0"] 
   }
 
   egress {
